@@ -193,7 +193,7 @@ from CPAC.sca.sca import (
 
 from CPAC.alff.alff import alff_falff, alff_falff_space_template
 from CPAC.reho.reho import reho, reho_space_template
-from CPAC.utils.serialization import save_workflow_json, WorkflowJSONMeta
+from CPAC.utils.serialization import save_workflow_json, WorkflowJSONMeta, save_workflow_pickle
 
 from CPAC.vmhc.vmhc import (
     smooth_func_vmhc,
@@ -421,14 +421,15 @@ def run_workflow(sub_dict, c, run, pipeline_timing_info=None, p_name=None,
                                     'weight_options']) != 0
 
     # Check system dependencies
-    check_ica_aroma = c.nuisance_corrections['1-ICA-AROMA']['run']
-    if isinstance(check_ica_aroma, list):
-        check_ica_aroma = True in check_ica_aroma
-    check_system_deps(check_ants='ANTS' in c.registration_workflows[
-        'anatomical_registration']['registration']['using'],
-                      check_ica_aroma=check_ica_aroma,
-                      check_centrality_degree=check_centrality_degree,
-                      check_centrality_lfcd=check_centrality_lfcd)
+    if not test_config:
+        check_ica_aroma = c.nuisance_corrections['1-ICA-AROMA']['run']
+        if isinstance(check_ica_aroma, list):
+            check_ica_aroma = True in check_ica_aroma
+        check_system_deps(check_ants='ANTS' in c.registration_workflows[
+            'anatomical_registration']['registration']['using'],
+                          check_ica_aroma=check_ica_aroma,
+                          check_centrality_degree=check_centrality_degree,
+                          check_centrality_lfcd=check_centrality_lfcd)
 
     # absolute paths of the dirs
     c.pipeline_setup['working_directory']['path'] = os.path.join(
@@ -564,6 +565,10 @@ Please, make yourself aware of how it works and its assumptions:
             try:
                 # Actually run the pipeline now, for the current subject
                 workflow.run(plugin=plugin, plugin_args=plugin_args)
+                save_workflow_pickle(filename=os.path.join(
+                        log_dir,
+                        WorkflowJSONMeta(pipeline_name=p_name, stage='post').filename() + '.pkl'
+                    ), workflow=workflow)
             except UnicodeDecodeError:
                 raise EnvironmentError(
                     "C-PAC migrated from Python 2 to Python 3 in v1.6.2 (see "
