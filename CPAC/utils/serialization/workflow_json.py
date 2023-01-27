@@ -97,13 +97,17 @@ class NodeData:
             repr=str(obj),
             inputs=_object_as_strdict(_serialize_inout(obj.inputs)),
             outputs=_object_as_strdict(_serialize_inout(obj.outputs)),
-            result_inputs=_object_as_strdict(None if obj.result is None else _serialize_inout(obj.result.inputs)),
-            result_outputs=_object_as_strdict(None if obj.result is None else _serialize_inout(obj.result.outputs)),
+            result_inputs=_object_as_strdict(None),
+            result_outputs=_object_as_strdict(None),
             nodes=[],
             edges=[]
         )
 
         if isinstance(obj, NodeRaw):
+            node_data.result_inputs = \
+                _object_as_strdict(None if obj.result is None else _serialize_inout(obj.result.inputs))
+            node_data.result_outputs = \
+                _object_as_strdict(None if obj.result is None else _serialize_inout(obj.result.outputs))
             return node_data
 
         if isinstance(obj, WorkflowRaw):
