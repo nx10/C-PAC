@@ -107,14 +107,14 @@ class NodeData:
             try:
                 node_data.result_inputs = \
                     _object_as_strdict(None if obj.result is None else _serialize_inout(obj.result.inputs))
-            except Exception as e:
-                node_data.result_inputs = _object_as_strdict(e)
+            except:
+                node_data.result_inputs = _object_as_strdict('Error loading results')
 
             try:
                 node_data.result_outputs = \
                     _object_as_strdict(None if obj.result is None else _serialize_inout(obj.result.outputs))
-            except Exception as e:
-                node_data.result_outputs = _object_as_strdict(e)
+            except:
+                node_data.result_outputs = _object_as_strdict('Error loading results')
 
             return node_data
 
