@@ -104,10 +104,18 @@ class NodeData:
         )
 
         if isinstance(obj, NodeRaw):
-            node_data.result_inputs = \
-                _object_as_strdict(None if obj.result is None else _serialize_inout(obj.result.inputs))
-            node_data.result_outputs = \
-                _object_as_strdict(None if obj.result is None else _serialize_inout(obj.result.outputs))
+            try:
+                node_data.result_inputs = \
+                    _object_as_strdict(None if obj.result is None else _serialize_inout(obj.result.inputs))
+            except Exception as e:
+                node_data.result_inputs = _object_as_strdict(e)
+
+            try:
+                node_data.result_outputs = \
+                    _object_as_strdict(None if obj.result is None else _serialize_inout(obj.result.outputs))
+            except Exception as e:
+                node_data.result_outputs = _object_as_strdict(e)
+
             return node_data
 
         if isinstance(obj, WorkflowRaw):
