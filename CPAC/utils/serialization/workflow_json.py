@@ -82,6 +82,8 @@ class NodeData:
 
     inputs: dict
     outputs: dict
+    result_inputs: dict
+    result_outputs: dict
 
     nodes: List['NodeData'] = dataclasses.field(default_factory=lambda: [])
     edges: List['EdgeData'] = dataclasses.field(default_factory=lambda: [])
@@ -95,6 +97,8 @@ class NodeData:
             repr=str(obj),
             inputs=_object_as_strdict(_serialize_inout(obj.inputs)),
             outputs=_object_as_strdict(_serialize_inout(obj.outputs)),
+            result_inputs=_object_as_strdict(None if obj.result is None else _serialize_inout(obj.result.inputs)),
+            result_outputs=_object_as_strdict(None if obj.result is None else _serialize_inout(obj.result.outputs)),
             nodes=[],
             edges=[]
         )
