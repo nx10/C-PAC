@@ -185,6 +185,7 @@ from CPAC.sca.sca import (
 
 from CPAC.alff.alff import alff_falff
 from CPAC.reho.reho import reho
+from CPAC.utils.serialization import save_workflow_json, WorkflowJSONMeta
 
 from CPAC.vmhc.vmhc import (
     smooth_func_vmhc,
@@ -441,6 +442,13 @@ def run_workflow(sub_dict, c, run, pipeline_timing_info=None, p_name=None,
 
     workflow = build_workflow(
         subject_id, sub_dict, c, p_name, num_ants_cores
+    )
+
+    workflow_meta = WorkflowJSONMeta(pipeline_name=p_name, stage='pre')
+    save_workflow_json(
+        filename=os.path.join(log_dir, workflow_meta.filename()),
+        workflow=workflow,
+        meta=workflow_meta
     )
 
     if test_config:
