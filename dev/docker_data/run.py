@@ -814,12 +814,37 @@ def run_main():
             for warning in LOGTAIL['warnings']:
                 logger.warning('%s\n', warning.rstrip())
 
-    sys.exit(exitcode)
+    #sys.exit(exitcode)
 
 
 if __name__ == '__main__':
     try:
+        import cProfile
+        import pstats
+        import io
+        from nipype import logging
+        import pathlib as pl
+
+
+        profiler = cProfile.Profile()
+        profiler.enable()
+
         run_main()
+
+        profiler.disable()
+
+        # find logging dir
+        log_dir = pl.Path(logging.getLogger('nipype.workflow').handlers[0].baseFilename).parent.parent.parent
+
+        profiler.dump_stats(str(log_dir / 'export-data.pstat'))
+        s = io.StringIO()
+        ps = pstats.Stats(profiler, stream=s).sort_stats('cumtime')
+        ps.print_stats()
+
+        with open(log_dir / 'export-data.pstat.txt', 'w') as f:
+            f.write(s.getvalue())
+
+
     except Exception as exception:
         # if we hit an exception before the pipeline starts to build but
         # we're still able to create a logfile, log the error in the file
